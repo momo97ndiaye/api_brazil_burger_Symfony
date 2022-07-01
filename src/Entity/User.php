@@ -4,38 +4,78 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\EmailValidateController;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource()]
-/* #[ORM\InheritanceType("JOINED")]
+#[ApiResource(
+    collectionOperations:['VALIDATE'=> [
+        'method'=>"PATCH",
+        'deserialize'=> false,
+        'path'=>'users/validate/{token}',
+        "controller"=>EmailValidateController::class
+    ],'POST'],
+)]
+#[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]
 #[ORM\DiscriminatorMap(["gestionnaire" => "Gestionnaire", "client" =>
-"Client","livreur"=>"Livreur"])] */
+"Client","livreur"=>"Livreur"])]
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(["user:write","read"])]
     protected $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(["user:read","user:write","read"])]
     protected $email;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(["user:read","user:write"])]
     protected $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Groups(["user:write"])]
     protected $password;
 
-    
+
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["user:read","user:write"])]
     protected $nomComplet;
 
+    #[SerializedName("password")]
+    #[Groups(["user:write"])]   
     protected $plainPassword;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected $token;
+
+    #[ORM\Column(type: 'datetime')]
+    protected $expireAt;
+
+    #[ORM\Column(type: 'boolean')]
+    protected $isEnable;
+
+    public function __construct(){
+        $this->isEnable = false;
+        $this->generateToken();
+        $role = get_called_class();
+        $role = explode('\\', $role);
+        $role = strtoupper($role[2]);
+        return $this->roles[] = "ROLE_".$role;
+    }
+    public function generateToken() {
+        $this->expireAt = new \DateTime('+ 1day');
+        $this->token = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(random_bytes(128)));
+    }
     
     public function getId(): ?int
     {
@@ -127,6 +167,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNomComplet(string $nomComplet): self
     {
         $this->nomComplet = $nomComplet;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getExpireAt(): ?\DateTimeInterface
+    {
+        return $this->expireAt;
+    }
+
+    public function setExpireAt(\DateTimeInterface $expireAt): self
+    {
+        $this->expireAt = $expireAt;
+
+        return $this;
+    }
+
+    public function isIsEnable(): ?bool
+    {
+        return $this->isEnable;
+    }
+
+    public function setIsEnable(bool $isEnable): self
+    {
+        $this->isEnable = $isEnable;
 
         return $this;
     }
