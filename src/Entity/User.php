@@ -19,7 +19,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         'deserialize'=> false,
         'path'=>'users/validate/{token}',
         "controller"=>EmailValidateController::class
-    ],'POST'],
+    ],
+    'POST'],
 )]
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]

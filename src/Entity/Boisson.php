@@ -2,15 +2,30 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Produit;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BoissonRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Produit;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: BoissonRepository::class)]
-#[ApiResource()]
+#[ApiResource(  normalizationContext : ["groups"=>[
+    "boisson:read"
+]],
+denormalizationContext : ["groups"=>[
+    "boisson:write"
+]],
+collectionOperations: [
+    'get',
+    'post'
+],
+itemOperations: [
+    'get',
+    'put',
+    'patch'
+],)]
 class Boisson extends Produit
 {
     #[ORM\ManyToMany(targetEntity: TailleBoisson::class, mappedBy: 'boissons')]
