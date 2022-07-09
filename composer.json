@@ -28,6 +28,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.1.*",
         "symfony/mailer": "6.1.*",
+        "symfony/maker-bundle": "^1.43",
         "symfony/property-access": "6.1.*",
         "symfony/property-info": "6.1.*",
         "symfony/proxy-manager-bridge": "6.1.*",
@@ -80,8 +81,7 @@
         },
         "post-install-cmd": [
             "@auto-scripts",
-            "php bin/console doctrine:schema:update --force",
-            "php bin/console doctrine:fixtures:load --append"
+            "php bin/console doctrine:schema:update --force"
         ],
         "post-update-cmd": [
             "@auto-scripts"
@@ -95,8 +95,5 @@
             "allow-contrib": false,
             "require": "6.1.*"
         }
-    },
-    "require-dev": {
-        "symfony/maker-bundle": "^1.43"
     }
 }
