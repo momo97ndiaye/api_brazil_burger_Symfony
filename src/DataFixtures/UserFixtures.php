@@ -11,9 +11,6 @@ class UserFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $faker= Factory::create("fr_Fr");
-
-
-        $manager->flush();
+        
     }
 }
