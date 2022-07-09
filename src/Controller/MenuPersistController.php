@@ -54,6 +54,7 @@ class MenuPersistController extends AbstractController{
         $this->entity->persist($menu);
         //dd($menu);
         $this->entity->flush();
+        return $this->json("ajout avec succés",201);
         //dd($menuBurgers);
     }
         
