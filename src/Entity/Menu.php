@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
-/* #[ApiResource(
+#[ApiResource(
     normalizationContext : ["groups"=>[
         "menu:read"
     ]],
@@ -34,7 +34,7 @@ itemOperations: [
     'get',
     'put',
     'patch'
-],)] */
+],)]
 class Menu extends Produit
 {
 
